@@ -4,10 +4,16 @@ public class avoidMeteor {
         battleSpaceShip.attack();
 
         ScoutSpaceShip scoutSpaceShip = new ScoutSpaceShip();
-        scoutSpaceShip.move();
+        scoutSpaceShip.booster();
 
         DefensiveSpaceShip defensiveSpaceShip = new DefensiveSpaceShip();
         defensiveSpaceShip.defenseUp();
+
+        Meteor meteor = new Meteor();
+        meteor.scatter();
+
+        Alien alien = new Alien();
+        alien.fallFaster();
 
     }
 }
