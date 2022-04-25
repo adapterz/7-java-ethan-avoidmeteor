@@ -1,4 +1,4 @@
-public class Obstacle extends Object{
+public class Obstacle extends Objects {
     // 장애물 데미지
     int damage;
     // 떨어지기
