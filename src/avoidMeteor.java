@@ -3,14 +3,20 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+// 게임이 실행되는 배경과 화면 출력을 담당.
 public class avoidMeteor extends JFrame {
     public Image backgroundImage = new ImageIcon("src/images/background3.jpg").getImage();
 
+    // 더블 버퍼링을 위해 전체화면에 대한 이미지를 담는 인스턴스
     private Image bufferImage;
     private Graphics screenGraphic;
 
-    static int frameWidth = 800;
-    static int frameHeight = 600;
+
+    // 게임플레이 클래스에 대한 객체 생성 (스레드 생성을 위해)
+    public static GamePlay gamePlay = new GamePlay();
+
+    public static final int frameWidth = 800;
+    public static final int frameHeight = 600;
 
     public avoidMeteor(){
         setTitle("AVOID METEOR");
@@ -40,7 +46,7 @@ public class avoidMeteor extends JFrame {
                         break;
                 }
             }
-            //            키를 땠을 때 실행할 메소드
+            // 키를 땠을 때 실행할 메소드
             public void keyReleased(KeyEvent e){
                 switch (e.getKeyCode()){
                     case KeyEvent.VK_W:
@@ -58,35 +64,11 @@ public class avoidMeteor extends JFrame {
                 }
             }
         });
-        new BattleSpaceShip();
-        new Meteor();
-        new Alien();
-        while(true){
-            try{
-                // 무한 반복 시키면 무리가 갈 수 있으므로, 20밀리초로 텀을 둔다
-                Thread.sleep(20);
-            } catch(InterruptedException e){
-                e.printStackTrace();
-            }
-            SpaceShip.keyProcess();
-            crashCheck();
-        }
+        gamePlay.start();
     }
 
-    // 플레이어와 장애물이 닿았을 때, 플레이어 점수 획득
-    public void crashCheck(){
-        if (SpaceShip.playerX+64>Meteor.meteorX&&Meteor.meteorX+64>SpaceShip.playerX&&SpaceShip.playerY+64>Meteor.meteorY&&Meteor.meteorY+64>SpaceShip.playerY){
-            Meteor.meteorX = (int)(Math.random()*(avoidMeteor.frameWidth-64));
-            Meteor.meteorY = (int)(Math.random()*(avoidMeteor.frameHeight-64-30)+30);
-        }
-        if (SpaceShip.playerX+64>Alien.alienX&&Alien.alienX+64>SpaceShip.playerX&&SpaceShip.playerY+64>Alien.alienY&&Alien.alienY+64>SpaceShip.playerY){
-            Alien.alienX = (int)(Math.random()*(avoidMeteor.frameWidth-64));
-            Alien.alienY = (int)(Math.random()*(avoidMeteor.frameHeight-64-30)+30);
-        }
-    }
-
-
-
+    // Paints this component. ( 컴포넌트를 그린다. )
+    // This method is called when the contents of the component should be painted; such as when the component is first being shown or is damaged and in need of repair. ( 프레임이 처음 켜졌을때와 데미지를 입었거나, 수리가 필요할때 paint()가 호출된다. )
     public void paint(Graphics g){
         bufferImage = createImage(frameWidth, frameHeight);
         screenGraphic = bufferImage.getGraphics();
@@ -94,14 +76,13 @@ public class avoidMeteor extends JFrame {
         g.drawImage(bufferImage,0,0,null);
     }
 
-
     public void screenDraw(Graphics g){
         g.drawImage(backgroundImage,0,0,null);
-        g.drawImage(BattleSpaceShip.player,BattleSpaceShip.playerX,BattleSpaceShip.playerY,null);
-        g.drawImage(Meteor.meteorImage,Meteor.meteorX,Meteor.meteorY,null);
-        g.drawImage(Alien.alienImage,Alien.alienX,Alien.alienY,null);
-        this.repaint();
+        gamePlay.gameDraw(g);
 
+        // Repaints this component. ( 컴포넌트를 다시 그린다. )
+        // If this component is a lightweight component, this method causes a call to this component's paint method as soon as possible. Otherwise, this method causes a call to this component's update method as soon as possible. ( 경량 컴포넌트라면 바로 paint()를 호출한다. 아니라면, update()를 호출한다. )
+        this.repaint();
     }
 
     public static void main(String[] args) {
