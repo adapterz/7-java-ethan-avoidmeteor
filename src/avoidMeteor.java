@@ -15,13 +15,13 @@ public class avoidMeteor extends JFrame {
     // 게임플레이 클래스에 대한 객체 생성 (스레드 생성을 위해)
     public static GamePlay gamePlay = new GamePlay();
 
-    public static final int frameWidth = 800;
-    public static final int frameHeight = 600;
+    public static final int FRAME_WIDTH = 800;
+    public static final int FRAME_HEIGHT = 600;
 
     public avoidMeteor(){
         setTitle("AVOID METEOR");
         setVisible(true);
-        setSize(frameWidth,frameHeight);
+        setSize(FRAME_WIDTH,FRAME_HEIGHT);
         setLocationRelativeTo(null);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -70,7 +70,7 @@ public class avoidMeteor extends JFrame {
     // Paints this component. ( 컴포넌트를 그린다. )
     // This method is called when the contents of the component should be painted; such as when the component is first being shown or is damaged and in need of repair. ( 프레임이 처음 켜졌을때와 데미지를 입었거나, 수리가 필요할때 paint()가 호출된다. )
     public void paint(Graphics g){
-        bufferImage = createImage(frameWidth, frameHeight);
+        bufferImage = createImage(FRAME_WIDTH, FRAME_HEIGHT);
         screenGraphic = bufferImage.getGraphics();
         screenDraw(screenGraphic);
         g.drawImage(bufferImage,0,0,null);

@@ -15,7 +15,7 @@ public class Alien extends Obstacle{
     }
 
     public void move() {
-        this.x -= 2;
+//        this.x -= 2;
         this.y += 3;
     }
     // 1초 후에 빠르게 떨어지는 기능
