@@ -5,12 +5,11 @@ import java.awt.event.KeyEvent;
 
 // 게임이 실행되는 배경과 화면 출력을 담당.
 public class avoidMeteor extends JFrame {
-    public Image backgroundImage = new ImageIcon("src/images/background3.jpg").getImage();
+    private Image backgroundImage = new ImageIcon("src/images/background3.jpg").getImage();
 
     // 더블 버퍼링을 위해 전체화면에 대한 이미지를 담는 인스턴스
     private Image bufferImage;
     private Graphics screenGraphic;
-
 
     // 게임플레이 클래스에 대한 객체 생성 (스레드 생성을 위해)
     public static GamePlay gamePlay = new GamePlay();

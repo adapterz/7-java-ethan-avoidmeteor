@@ -16,9 +16,6 @@ public class GamePlay extends Thread{
     // 현재 시간
     private long pretime;
 
-    // 플레이어의 이미지
-//    private Image player = new ImageIcon(BattleSpaceShip.player).getImage();
-
     private ArrayList<Meteor> meteorList = new ArrayList<Meteor>();
     private ArrayList<Alien> alienList = new ArrayList<Alien>();
     private Meteor meteor;
@@ -62,8 +59,7 @@ public class GamePlay extends Thread{
     }
 
     private void meteorAppearProcess(){
-        if (count % 50 == 0){
-            //랜덤한 위치에 적들이 나오게 만든다.
+        if (count % 30 == 0){
             meteor = new Meteor(0, (int)(Math.random()*580));
             meteorList.add(meteor);
             System.out.println(meteorList);
@@ -78,12 +74,12 @@ public class GamePlay extends Thread{
             if (meteor.x > 800){
                 meteorList.remove(i);
             }
-            meteor.crash(player);
+//            meteor.crash(player);
             }
         }
 
     private void alienAppearProcess(){
-        if (count % 50 == 0){
+        if (count % 30 == 0){
             //랜덤한 위치에 적들이 나오게 만든다.
             alien = new Alien((int)(Math.random()*780), 0 );
             alienList.add(alien);
@@ -151,12 +147,15 @@ public class GamePlay extends Thread{
 //
 //    }
     public void crashCheckMeteor(BattleSpaceShip player,Meteor meteor){
-        if (Math.abs( ( BattleSpaceShip.x + BattleSpaceShip.width/2 ) - ( meteor.x + meteor.width/2 ) ) < ((BattleSpaceShip.width + meteor.width)/2)
-        && Math.abs( ( BattleSpaceShip.y + BattleSpaceShip.height/2 ) - ( meteor.y + meteor.height/2 ) ) < ((BattleSpaceShip.height + meteor.height)/2)) {
-            meteor.x = 1000;
-            meteor.y = 1000;
-            playSound("src/audios/boom1.wav", false);
-            gamePlaying = false;
+        for (int i = 0; i<meteorList.size(); i++) {
+            meteor = meteorList.get(i);
+            if (Math.abs((BattleSpaceShip.x + BattleSpaceShip.width / 2) - (meteor.x + meteor.width / 2)) < ((BattleSpaceShip.width + meteor.width) / 2)
+                    && Math.abs((BattleSpaceShip.y + BattleSpaceShip.height / 2) - (meteor.y + meteor.height / 2)) < ((BattleSpaceShip.height + meteor.height) / 2)) {
+                meteor.x = 1000;
+                meteor.y = 1000;
+                playSound("src/audios/boom1.wav", false);
+                gamePlaying = false;
+            }
         }
 //        System.out.println("우주선 좌표 : "+BattleSpaceShip.x+" "+BattleSpaceShip.y);
 //        System.out.println("운석 좌표 : "+meteor.x+" "+meteor.y);
@@ -164,12 +163,15 @@ public class GamePlay extends Thread{
     }
 
     public void crashCheckAlien(BattleSpaceShip player,Alien alien){
+        for (int i = 0; i<alienList.size(); i++) {
+            alien = alienList.get(i);
         if (Math.abs( ( BattleSpaceShip.x + BattleSpaceShip.width/2 ) - ( alien.x + alien.width/2 ) ) < ((BattleSpaceShip.width + alien.width)/2)
-                && Math.abs( ( BattleSpaceShip.y + BattleSpaceShip.height/2 ) - ( alien.y + alien.height/2 ) ) < ((BattleSpaceShip.height + alien.height)/2)){
+                && Math.abs( ( BattleSpaceShip.y + BattleSpaceShip.height/2 ) - ( alien.y + alien.height/2 ) ) < ((BattleSpaceShip.height + alien.height)/2)) {
             alien.x = 1000;
             alien.y = 1000;
-            playSound("src/audios/boom1.wav",false);
+            playSound("src/audios/boom1.wav", false);
             gamePlaying = false;
+        }
         }
     }
 //    public void crashCheck(BattleSpaceShip player, Meteor meteor, Alien alien){
