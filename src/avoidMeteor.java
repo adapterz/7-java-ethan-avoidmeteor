@@ -5,30 +5,33 @@ import java.awt.event.KeyEvent;
 
 // 게임이 실행되는 배경과 화면 출력을 담당.
 public class avoidMeteor extends JFrame {
-    private Image backgroundImage = new ImageIcon("src/images/background3.jpg").getImage();
 
-    // 더블 버퍼링을 위해 전체화면에 대한 이미지를 담는 인스턴스
+    private Image initialBackgroundImage = new ImageIcon("src/images/background_initial_2.png").getImage();
+    private Image inGameBackgroundImage = new ImageIcon("src/images/background3.jpg").getImage();
+    private Image gameOverBackgroundImage = new ImageIcon("src/images/background_gameover.png").getImage();
+
+    static boolean isInitialBackground;
+    static boolean isInGameBackground;
+    static boolean gameOverBackground;
+
+    public static GamePlay gamePlay = new GamePlay();
+
     private Image bufferImage;
     private Graphics screenGraphic;
-
-    // 게임플레이 클래스에 대한 객체 생성 (스레드 생성을 위해)
-    public static GamePlay gamePlay = new GamePlay();
 
     public static final int FRAME_WIDTH = 800;
     public static final int FRAME_HEIGHT = 600;
 
     public avoidMeteor(){
         setTitle("AVOID METEOR");
-        setVisible(true);
         setSize(FRAME_WIDTH,FRAME_HEIGHT);
+        setResizable(true);
         setLocationRelativeTo(null);
-        setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // 키보드 리스너 추가
+        setLayout(null);
+        setVisible(true);
+        init();
         addKeyListener(new KeyAdapter() {
-            // 키를 눌렀을 떄, 실행할 메소드
-            // 키를 불리언으로 하지 않으면 2개의 입력값을 못받아들인다.
             public void keyPressed(KeyEvent e){
                 switch (e.getKeyCode()){
                     case KeyEvent.VK_W:
@@ -43,9 +46,24 @@ public class avoidMeteor extends JFrame {
                     case KeyEvent.VK_D:
                         SpaceShip.right = true;
                         break;
+                    case KeyEvent.VK_ENTER:
+                        if (isInitialBackground)
+                            gameStart();
+                            gamePlay.start();
+                        if (gameOverBackground)
+//                            Thread.interrupted();
+//                            new avoidMeteor();
+//                            new GamePlay();
+//                            gameStart();
+//                            gamePlay.start();
+                        break;
+                    // ESC 를 누르면 게임 종료
+                    case KeyEvent.VK_ESCAPE:
+                        System.exit(0);
+                        break;
+
                 }
             }
-            // 키를 땠을 때 실행할 메소드
             public void keyReleased(KeyEvent e){
                 switch (e.getKeyCode()){
                     case KeyEvent.VK_W:
@@ -63,11 +81,26 @@ public class avoidMeteor extends JFrame {
                 }
             }
         });
-        gamePlay.start();
     }
 
-    // Paints this component. ( 컴포넌트를 그린다. )
-    // This method is called when the contents of the component should be painted; such as when the component is first being shown or is damaged and in need of repair. ( 프레임이 처음 켜졌을때와 데미지를 입었거나, 수리가 필요할때 paint()가 호출된다. )
+    private void init(){
+        isInitialBackground = true;
+        isInGameBackground = false;
+        gameOverBackground = false;
+    }
+
+    private void gameStart(){
+        isInitialBackground = false;
+        isInGameBackground = true;
+        gameOverBackground = false;
+    };
+
+    public static void gameOver(){
+        isInitialBackground = false;
+        isInGameBackground = false;
+        gameOverBackground = true;
+    }
+
     public void paint(Graphics g){
         bufferImage = createImage(FRAME_WIDTH, FRAME_HEIGHT);
         screenGraphic = bufferImage.getGraphics();
@@ -76,13 +109,25 @@ public class avoidMeteor extends JFrame {
     }
 
     public void screenDraw(Graphics g){
-        g.drawImage(backgroundImage,0,0,null);
-        gamePlay.gameDraw(g);
-
-        // Repaints this component. ( 컴포넌트를 다시 그린다. )
-        // If this component is a lightweight component, this method causes a call to this component's paint method as soon as possible. Otherwise, this method causes a call to this component's update method as soon as possible. ( 경량 컴포넌트라면 바로 paint()를 호출한다. 아니라면, update()를 호출한다. )
+        if (isInitialBackground){
+            g.drawImage(initialBackgroundImage,0,0,null);
+        }
+        if (isInGameBackground){
+            g.drawImage(inGameBackgroundImage,0,0,null);
+            gamePlay.gameDraw(g);
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.BOLD,40));
+            g.drawString("SCORE :" + GamePlay.score, 30, 80);
+        }
+        if (gameOverBackground) {
+            g.drawImage(gameOverBackgroundImage, 0, 0, null);
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.BOLD,40));
+            g.drawString("SCORE :" + GamePlay.score, 300, 400);
+        }
         this.repaint();
     }
+
 
     public static void main(String[] args) {
         new avoidMeteor();

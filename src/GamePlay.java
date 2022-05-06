@@ -12,9 +12,10 @@ public class GamePlay extends Thread{
     // 게임의 딜레이를 표시
     private int delay = 10;
     // 딜레이마다 증가할 cnt (게임 진행 시간)
-    private int count;
+    public static int count;
     // 현재 시간
     private long pretime;
+    public static int score;
 
     private ArrayList<Meteor> meteorList = new ArrayList<Meteor>();
     private ArrayList<Alien> alienList = new ArrayList<Alien>();
@@ -26,6 +27,7 @@ public class GamePlay extends Thread{
     @Override
     public void run() {
         // 게임 진행 시간, 플레이어 위치 초기화
+        score = 0;
         count = 0;
         gamePlaying = true;
         BattleSpaceShip player = new BattleSpaceShip((avoidMeteor.FRAME_WIDTH - 64)/2, (avoidMeteor.FRAME_HEIGHT - 64)/2);
@@ -49,6 +51,7 @@ public class GamePlay extends Thread{
                     crashCheckAlien(player, alien);
 
                     count++;
+                    score++;
                     // thread 슬립에 대한 예외 처리
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -127,25 +130,7 @@ public class GamePlay extends Thread{
             g.drawImage(alien.image, alien.x, alien.y, null);
         }
     }
-    //플레이어와 장애물이 닿았을 때
-//    public boolean Crash(int x1, int y1, int x2, int y2, Image img1, Image img2){
-//    //기존 충돌 판정 소스를 변경합니다.
-//    //이제 이미지 변수를 바로 받아 해당 이미지의 넓이, 높이값을
-//    //바로 계산합니다.
-//        boolean check = false;
-//        if ( Math.abs( ( x1 + img1.getWidth(null) / 2 )
-//                - ( x2 + img2.getWidth(null) / 2 ))
-//                < ( img2.getWidth(null) / 2 + img1.getWidth(null) / 2 )
-//                && Math.abs( ( y1 + img1.getHeight(null) / 2 )
-//                - ( y2 + img2.getHeight(null) / 2 ))
-//                < ( img2.getHeight(null)/2 + img1.getHeight(null)/2 ) ){
-//    //이미지 넓이, 높이값을 바로 받아 계산합니다.
-//            check = true;//위 값이 true면 check에 true를 전달합니다.
-//        }else{ check = false;}
-//
-//        return check; //check의 값을 메소드에 리턴 시킵니다.
-//
-//    }
+
     public void crashCheckMeteor(BattleSpaceShip player,Meteor meteor){
         for (int i = 0; i<meteorList.size(); i++) {
             meteor = meteorList.get(i);
@@ -157,9 +142,6 @@ public class GamePlay extends Thread{
                 gamePlaying = false;
             }
         }
-//        System.out.println("우주선 좌표 : "+BattleSpaceShip.x+" "+BattleSpaceShip.y);
-//        System.out.println("운석 좌표 : "+meteor.x+" "+meteor.y);
-//        System.out.println("우주선 좌표 : "+player.x+" "+player.y);
     }
 
     public void crashCheckAlien(BattleSpaceShip player,Alien alien){
@@ -174,37 +156,6 @@ public class GamePlay extends Thread{
         }
         }
     }
-//    public void crashCheck(BattleSpaceShip player, Meteor meteor, Alien alien){
-//        if ((Math.abs((player.x + player.width / 2) - ( meteor.x + meteor.width / 2)) < ( meteor.width / 2 + player.width / 2) &&
-//                Math.abs( (player.y + player.height / 2) - (meteor.y + meteor.height / 2)) < ( meteor.height /2 + player.height / 2))){
-//            meteor.x = 1000;
-//            meteor.y = 1000;
-//            playSound("src/audios/boom1.wav",false);
-//            gamePlaying = false;
-//        }
-//
-//        if ((Math.abs((player.x + player.width / 2) - ( alien.x + player.width / 2)) < ( alien.width / 2 + player.width / 2) &&
-//                Math.abs( (player.y + player.height / 2) - (alien.y + alien.height / 2)) < ( alien.height /2 + player.height / 2))){
-//            alien.x = 1000;
-//            alien.y = 1000;
-//            playSound("src/audios/boom1.wav",false);
-//            gamePlaying = false;
-//        }
-
-//
-//        if (BattleSpaceShip.playerX>meteor.x && BattleSpaceShip.playerX<meteor.x+meteor.width && BattleSpaceShip.playerY>meteor.y&&BattleSpaceShip.playerY<meteor.y+meteor.height){
-//            meteor.x = 1000;
-//            meteor.y = 1000;
-//            playSound("src/audios/boom1.wav",false);
-//            gamePlaying = false;
-//        }
-//        if (BattleSpaceShip.playerX>alien.x && BattleSpaceShip.playerX<alien.x+alien.width && BattleSpaceShip.playerY>alien.y && BattleSpaceShip.playerY<alien.y+alien.height){
-//            alien.x = 1000;
-//            alien.y = 1000;
-//            playSound("src/audios/boom1.wav",false);
-//            gamePlaying = false;
-//        }
-
 
     public void playSound(String pathName, boolean isLoop){
         try{
