@@ -1,10 +1,18 @@
+package main;
+
+import spaceship.SpaceShip;
+
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
+
 
 // 게임이 실행되는 배경과 화면 출력을 담당.
-public class avoidMeteor extends JFrame {
+public class AvoidMeteor extends JFrame {
 
     private Image initialBackgroundImage = new ImageIcon("src/images/background_initial_2.png").getImage();
     private Image inGameBackgroundImage = new ImageIcon("src/images/background3.jpg").getImage();
@@ -12,9 +20,7 @@ public class avoidMeteor extends JFrame {
 
     static boolean isInitialBackground;
     static boolean isInGameBackground;
-    static boolean gameOverBackground;
-
-    public static GamePlay gamePlay = new GamePlay();
+    static boolean isGameOverBackground;
 
     private Image bufferImage;
     private Graphics screenGraphic;
@@ -22,7 +28,9 @@ public class avoidMeteor extends JFrame {
     public static final int FRAME_WIDTH = 800;
     public static final int FRAME_HEIGHT = 600;
 
-    public avoidMeteor(){
+    GamePlay gamePlay = new GamePlay();
+
+    public AvoidMeteor(){
         setTitle("AVOID METEOR");
         setSize(FRAME_WIDTH,FRAME_HEIGHT);
         setResizable(true);
@@ -47,16 +55,16 @@ public class avoidMeteor extends JFrame {
                         SpaceShip.right = true;
                         break;
                     case KeyEvent.VK_ENTER:
-                        if (isInitialBackground)
+                        if (isInitialBackground){
                             gameStart();
                             gamePlay.start();
-                        if (gameOverBackground)
-//                            Thread.interrupted();
-//                            new avoidMeteor();
-//                            new GamePlay();
-//                            gameStart();
-//                            gamePlay.start();
-                        break;
+                            break;
+                        }
+                        if (isGameOverBackground){
+                            gameStart();
+                            new GamePlay().start();
+                            break;
+                        }
                     // ESC 를 누르면 게임 종료
                     case KeyEvent.VK_ESCAPE:
                         System.exit(0);
@@ -86,19 +94,20 @@ public class avoidMeteor extends JFrame {
     private void init(){
         isInitialBackground = true;
         isInGameBackground = false;
-        gameOverBackground = false;
+        isGameOverBackground = false;
+        playSound("src/audios/background.wav",true);
     }
 
     private void gameStart(){
         isInitialBackground = false;
         isInGameBackground = true;
-        gameOverBackground = false;
+        isGameOverBackground = false;
     };
 
     public static void gameOver(){
         isInitialBackground = false;
         isInGameBackground = false;
-        gameOverBackground = true;
+        isGameOverBackground = true;
     }
 
     public void paint(Graphics g){
@@ -119,7 +128,7 @@ public class avoidMeteor extends JFrame {
             g.setFont(new Font("Arial", Font.BOLD,40));
             g.drawString("SCORE :" + GamePlay.score, 30, 80);
         }
-        if (gameOverBackground) {
+        if (isGameOverBackground) {
             g.drawImage(gameOverBackgroundImage, 0, 0, null);
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", Font.BOLD,40));
@@ -128,9 +137,25 @@ public class avoidMeteor extends JFrame {
         this.repaint();
     }
 
-
+    public void playSound(String pathName, boolean isLoop){
+        try{
+            Clip clip = AudioSystem.getClip();
+            File audioFile = new File(pathName);
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+            clip.open(audioStream);
+            clip.start();
+            if (isLoop)
+                clip.loop(Clip.LOOP_CONTINUOUSLY);
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        } catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public static void main(String[] args) {
-        new avoidMeteor();
+        new AvoidMeteor();
     }
 }
 

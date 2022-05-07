@@ -1,5 +1,12 @@
+package main;
+
+import enemy.Alien;
+import enemy.Meteor;
+import main.AvoidMeteor;
+import spaceship.BattleSpaceShip;
+
+
 import javax.sound.sampled.*;
-import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -30,8 +37,8 @@ public class GamePlay extends Thread{
         score = 0;
         count = 0;
         gamePlaying = true;
-        BattleSpaceShip player = new BattleSpaceShip((avoidMeteor.FRAME_WIDTH - 64)/2, (avoidMeteor.FRAME_HEIGHT - 64)/2);
-        playSound("src/audios/background.wav",true);
+        BattleSpaceShip player = new BattleSpaceShip((AvoidMeteor.FRAME_WIDTH - 64)/2, (AvoidMeteor.FRAME_HEIGHT - 64)/2);
+
         // 스레드가 실행되면 키 프로세스가 반복되어서 실행되고, 밀리초마다
         while(gamePlaying){
             // 현재시각을 밀리세컨드 단위로 반환한다.
@@ -49,16 +56,21 @@ public class GamePlay extends Thread{
                     alienMoveProcess();
                     crashCheckMeteor(player, meteor);
                     crashCheckAlien(player, alien);
-
+                    if(!gamePlaying){
+                        Thread.sleep(100);
+                        Thread.interrupted();
+//                        clip.stop();
+                    }
                     count++;
                     score++;
                     // thread 슬립에 대한 예외 처리
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-
         }
+
     }
 
     private void meteorAppearProcess(){
@@ -80,6 +92,13 @@ public class GamePlay extends Thread{
 //            meteor.crash(player);
             }
         }
+//
+//    private void meteorClearProcess(){
+//        for (int i = 0; i < meteorList.size(); i++){
+//            meteor = meteorList.get(i);
+//            meteorList.remove(meteor);
+//        }
+//        }
 
     private void alienAppearProcess(){
         if (count % 30 == 0){
@@ -95,8 +114,11 @@ public class GamePlay extends Thread{
             alien = alienList.get(i);
             // 외계인 클래스 내 move 메서드 사용
             alien.move();
-//            crashCheckAlien(BattleSpaceShip.player, alien);
+//            crashCheckAlien(spaceship.BattleSpaceShip.player, alien);
             if (alien.y > 580){
+                alienList.remove(i);
+            }
+            if (!gamePlaying){
                 alienList.remove(i);
             }
         }
@@ -131,7 +153,7 @@ public class GamePlay extends Thread{
         }
     }
 
-    public void crashCheckMeteor(BattleSpaceShip player,Meteor meteor){
+    public void crashCheckMeteor(BattleSpaceShip player,Meteor meteor) throws InterruptedException {
         for (int i = 0; i<meteorList.size(); i++) {
             meteor = meteorList.get(i);
             if (Math.abs((BattleSpaceShip.x + BattleSpaceShip.width / 2) - (meteor.x + meteor.width / 2)) < ((BattleSpaceShip.width + meteor.width) / 2)
@@ -139,12 +161,14 @@ public class GamePlay extends Thread{
                 meteor.x = 1000;
                 meteor.y = 1000;
                 playSound("src/audios/boom1.wav", false);
+//                clip.stop();
                 gamePlaying = false;
+                main.AvoidMeteor.gameOver();
             }
         }
     }
 
-    public void crashCheckAlien(BattleSpaceShip player,Alien alien){
+    public void crashCheckAlien(BattleSpaceShip player,Alien alien) throws InterruptedException {
         for (int i = 0; i<alienList.size(); i++) {
             alien = alienList.get(i);
         if (Math.abs( ( BattleSpaceShip.x + BattleSpaceShip.width/2 ) - ( alien.x + alien.width/2 ) ) < ((BattleSpaceShip.width + alien.width)/2)
@@ -153,6 +177,7 @@ public class GamePlay extends Thread{
             alien.y = 1000;
             playSound("src/audios/boom1.wav", false);
             gamePlaying = false;
+            AvoidMeteor.gameOver();
         }
         }
     }
@@ -174,6 +199,4 @@ public class GamePlay extends Thread{
             e.printStackTrace();
         }
     }
-
-
 }
